@@ -33,6 +33,7 @@ jobs:
         with:
           push: false
           load: true 
+          context: ./pizza_app
           file: pizza_app/Dockerfile
           tags: ${{ github.run_id }}
           cache-from: type=gha
@@ -66,6 +67,7 @@ jobs:
         uses: docker/build-push-action@v4
         with:
           push: true
+          context: ./pizza_app
           file: pizza_app/Dockerfile
           tags: ${{ steps.docker_meta.outputs.tags }}
           labels: ${{ steps.docker_meta.outputs.labels }}
