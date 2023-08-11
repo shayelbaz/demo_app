@@ -11,9 +11,9 @@ metadata:
 spec:
   type: ClusterIP
   ports:
-    - name: ui
+    - name: http
       port: {{ .Values.service.httpPort }}
-      targetPort: {{ .Values.service.httpPort }}
+      targetPort: {{ .Values.service.httpTargetPort }}
       protocol: TCP
   selector:
     app: {{ template "pizza.fullname" . }}

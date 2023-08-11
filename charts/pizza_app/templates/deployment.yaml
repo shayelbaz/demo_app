@@ -22,15 +22,29 @@ spec:
         image: {{ .Values.appImage }}:{{ .Values.appImageTag | default "main" }}
         imagePullPolicy: {{ .Values.imagePullPolicy | default "IfNotPresent" }}
         ports:
-        - name: httpport
-          containerPort: {{ .Values.service.httpPort | default 8080 }}
+        - name: http
+          containerPort: {{ .Values.service.httpTargetPort | default 8080 }}
+        env:
+            - name: DATA_PATH
+              value: {{ .Values.volumeMountPath}}
         livenessProbe: 
      {{- toYaml .Values.livenessProbe | nindent 10 }}
         readinessProbe: 
      {{- toYaml .Values.readinessProbe | nindent 10 }}
         resources: 
      {{- toYaml .Values.resources | nindent 10 }}
-      securityContext: 
-        runAsUser: {{ .Values.userUID }}
+        volumeMounts:
+        - mountPath: {{ .Values.volumeMountPath }}
+          name: pizza-orders
+        securityContext: 
+     {{- toYaml .Values.securityContext | nindent 10 }}
       restartPolicy: {{ .Values.restartPolicy }}
       terminationGracePeriodSeconds: {{ .Values.terminationGracePeriodSeconds }}
+      volumes:
+      - name: pizza-orders
+      {{- if .Values.persistence.enabled }}
+        persistentVolumeClaim:
+          claimName: {{ .Values.persistence.volumeClaimName }}
+      {{- else }}
+        emptyDir: {}
+      {{- end}}

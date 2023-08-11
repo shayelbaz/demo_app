@@ -1,0 +1,19 @@
+{{- if and .Values.persistence.enabled }}
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ .Values.persistence.volumeClaimName }}
+spec:
+{{- if eq .Values.persistence.type "local" }}
+  storageClassName: {{ .Values.persistence.local.storageClassName }}
+{{- end }}
+  accessModes:
+{{- if eq .Values.persistence.type "local" }}
+    {{ .Values.persistence.local.accessModes }} 
+{{- end }}
+  resources:
+    requests:
+    {{- if eq .Values.persistence.type "local" }}
+      storage: {{ .Values.persistence.local.capacity.storage | squote }} 
+    {{- end }}
+{{- end }}

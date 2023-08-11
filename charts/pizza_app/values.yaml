@@ -11,15 +11,25 @@ appImage: shayelbazwork/hiredscore-public
 appImageTag: main
 imagePullPolicy: IfNotPresent
 restartPolicy: Always
-userUID: 1000
+clusterRoleName: pizza-app-role
+serviceAccountName: pizza-app-sa
+
+securityContext:
+  runAsUser: 1000
+  runAsGroup: 1000
+  readOnlyRootFilesystem: true
+  allowPrivilegeEscalation: false
+
 
 service:
   httpPort: 8080
+  httpTargetPort: 5000
+
 livenessProbe:
   httpGet:
     path: "/health"
     port: httpport
-  initialDelaySeconds: 90
+  initialDelaySeconds: 60
   periodSeconds: 10
   timeoutSeconds: 5
   failureThreshold: 5
@@ -28,7 +38,7 @@ readinessProbe:
   httpGet:
     path: "/health"
     port: httpport
-  initialDelaySeconds: 60
+  initialDelaySeconds: 30
   periodSeconds: 10
   timeoutSeconds: 5
   failureThreshold: 3
@@ -42,3 +52,35 @@ resources:
     memory: "200Mi"
 
 terminationGracePeriodSeconds: 30
+
+volumeMountPath: "/mnt/data"
+
+persistence:
+  enabled: true 
+  volumeName: pizza-app
+  volumeClaimName: "pizza-order-claim"
+  type: local
+
+ 
+  local:
+    storageClassName: manual
+    capacity:
+      storage: 5Gi
+    accessModes:
+      - ReadWriteOnce
+    hostPath:
+      path: "/home/data"
+
+
+
+ # nfs:
+  #   storageClassName: efs-sc
+  #   capacity:
+  #     storage: 5Gi
+  #   volumeMode: Filesystem
+  #   accessModes:
+  #     - ReadWriteMany
+  #   persistentVolumeReclaimPolicy: Retain
+  #   csi:
+  #     driver: efs.csi.aws.com
+  #     volumeHandle: fs-087fd49e4e6612df0

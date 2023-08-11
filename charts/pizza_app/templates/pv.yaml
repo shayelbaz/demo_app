@@ -1,0 +1,12 @@
+{{- if and .Values.persistence.enabled }}
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: {{ .Values.persistence.volumeName }}
+  labels:
+    type: {{ .Values.persistence.type }}
+spec:
+{{- if eq .Values.persistence.type "local" }}
+{{- toYaml .Values.persistence.local | nindent 2 }}
+{{- end }}
+{{- end }}
