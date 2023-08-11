@@ -17,6 +17,7 @@ serviceAccountName: pizza-app-sa
 securityContext:
   runAsUser: 1000
   runAsGroup: 1000
+  fsGroup: 1000
   readOnlyRootFilesystem: true
   allowPrivilegeEscalation: false
 

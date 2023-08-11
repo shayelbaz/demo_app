@@ -17,6 +17,13 @@ spec:
         app: {{ template "pizza.fullname" . }}
     spec:
       serviceAccountName: {{ .Values.serviceAccountName }}
+      initContainers:
+      - name: volume-mount-hack
+        image: busybox
+        command: ["sh", "-c", "chown -R {{ .Values.securityContext.runAsUser }}:{{ .Values.securityContext.runAsGroup }} {{ .Values.volumeMountPath }}"]
+        volumeMounts:
+        - name: pizza-orders
+          mountPath: {{ .Values.volumeMountPath}}
       containers:
       - name: pizza-app
         image: {{ .Values.appImage }}:{{ .Values.appImageTag | default "main" }}
