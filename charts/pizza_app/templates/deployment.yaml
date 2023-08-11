@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ template "pizza.fullname" . }}
+  labels:
+    {{- include "pizza.labels" . | nindent 4 }}
+spec:
+  selector:
+    matchLabels:
+      app: {{ template "pizza.fullname" . }}
+  replicas: {{ .Values.replicas | default 1 }}
+  strategy:
+{{- toYaml .Values.strategy | nindent 4 }}
+  template:
+    metadata:
+      labels:
+        app: {{ template "pizza.fullname" . }}
+    spec:
+      serviceAccountName: {{ .Values.serviceAccountName }}
+      containers:
+      - name: pizza-app
+        image: {{ .Values.appImage }}:{{ .Values.appImageTag | default "main" }}
+        imagePullPolicy: {{ .Values.imagePullPolicy | default "IfNotPresent" }}
+        ports:
+        - name: httpport
+          containerPort: {{ .Values.service.httpPort | default 8080 }}
+        livenessProbe: 
+     {{- toYaml .Values.livenessProbe | nindent 10 }}
+        readinessProbe: 
+     {{- toYaml .Values.readinessProbe | nindent 10 }}
+        resources: 
+     {{- toYaml .Values.resources | nindent 10 }}
+      securityContext: 
+        runAsUser: {{ .Values.userUID }}
+      restartPolicy: {{ .Values.restartPolicy }}
+      terminationGracePeriodSeconds: {{ .Values.terminationGracePeriodSeconds }}

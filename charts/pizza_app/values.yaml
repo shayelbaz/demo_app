@@ -1,0 +1,44 @@
+replicas: 1
+strategy:
+  type: RollingUpdate
+  rollingUpdate:
+    maxSurge: 1
+    maxUnavailable: 0
+
+fullnameOverride: pizza-chart
+
+appImage: shayelbazwork/hiredscore-public
+appImageTag: main
+imagePullPolicy: IfNotPresent
+restartPolicy: Always
+userUID: 1000
+
+service:
+  httpPort: 8080
+livenessProbe:
+  httpGet:
+    path: "/health"
+    port: httpport
+  initialDelaySeconds: 90
+  periodSeconds: 10
+  timeoutSeconds: 5
+  failureThreshold: 5
+
+readinessProbe:
+  httpGet:
+    path: "/health"
+    port: httpport
+  initialDelaySeconds: 60
+  periodSeconds: 10
+  timeoutSeconds: 5
+  failureThreshold: 3
+
+resources:
+  requests:
+    cpu: "100m"
+    memory: "100Mi"
+  limits:
+    cpu: "200m"
+    memory: "200Mi"
+
+terminationGracePeriodSeconds: 30

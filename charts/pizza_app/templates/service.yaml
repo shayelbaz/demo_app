@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ template "pizza.fullname" . }}
+  labels:
+    app: {{ template "pizza.fullname" . }}
+  annotations:
+      prometheus.io/scrape: 'true'
+      prometheus.io/path:   /
+      prometheus.io/port:   '{{ .Values.service.httpPort }}'
+spec:
+  type: ClusterIP
+  ports:
+    - name: ui
+      port: {{ .Values.service.httpPort }}
+      targetPort: {{ .Values.service.httpPort }}
+      protocol: TCP
+  selector:
+    app: {{ template "pizza.fullname" . }}
