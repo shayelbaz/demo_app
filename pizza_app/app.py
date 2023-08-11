@@ -1,8 +1,25 @@
 from flask import Flask, request, jsonify
+import json
+from os import path
+import os
 
 app = Flask(__name__)
 
-orders = []
+
+dataPath = os.getenv('DATA_PATH')
+orders_file = dataPath + "/orders.json"
+
+def load_orders():
+    if path.isfile(orders_file) is False:
+        print("File not found, Creating...")
+        orders = []
+        with open(orders_file, 'w') as json_file:
+            json.dump(orders, json_file)
+
+    with open(orders_file) as f:
+        orders = json.load(f)
+    
+    return orders
 
 
 def validate_order(data):
@@ -44,7 +61,12 @@ def create_order():
         'size': size,
         'amount': amount
     }
+
+    orders = load_orders()
     orders.append(order)
+
+    with open(orders_file, 'w') as json_file:
+        json.dump(orders, json_file,indent=4,separators=(',',': '))
 
     return jsonify({'message': 'Order created successfully'}), 201
 
@@ -54,4 +76,4 @@ def check_health():
 
 
 if __name__ == '__main__':
-    app.run(debug=True, host='0.0.0.0', port=5000)
+    app.run(debug=True, host='0.0.0.0', port=5002)
