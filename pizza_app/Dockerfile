@@ -32,6 +32,10 @@ RUN groupadd --gid $USER_GID $USERNAME \
 WORKDIR $HOME
 
 COPY --from=builder /usr/src/app/ .
+
+RUN mkdir -p /mnt/data
+
+RUN chown -R $USERNAME:$USERNAME /mnt/data
 RUN chown -R $USERNAME:$USERNAME $HOME
 
 USER $USERNAME

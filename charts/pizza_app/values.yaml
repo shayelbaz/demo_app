@@ -67,7 +67,7 @@ persistence:
     capacity:
       storage: 5Gi
     accessModes:
-      - ReadWriteOnce
+      - ReadWriteMany
     hostPath:
       path: "/home/data"
 
