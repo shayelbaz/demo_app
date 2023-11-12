@@ -52,7 +52,7 @@ jobs:
         id: docker_meta
         uses: docker/metadata-action@v4
         with:
-          images: shayelbazwork/hiredscore-public
+          images: shayelbaz90/demo_app
           flavor: |
             latest=false
           tags: |
