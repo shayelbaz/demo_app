@@ -1,4 +1,4 @@
-# HiredScore
+# Demo App
 # Pizza-app Helm Chart
 
 Pizza-app is an python app for managing pizza orders written in Flask framework.
