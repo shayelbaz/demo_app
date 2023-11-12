@@ -7,7 +7,7 @@ strategy:
 
 fullnameOverride: pizza-chart
 
-appImage: shayelbazwork/hiredscore-public
+appImage: shayelbaz90/demo_app
 appImageTag: main
 imagePullPolicy: IfNotPresent
 restartPolicy: Always

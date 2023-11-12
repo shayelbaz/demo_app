@@ -2,11 +2,17 @@ from flask import Flask, request, jsonify
 import json
 from os import path
 import os
+import boto3
 
 app = Flask(__name__)
 
 
 dataPath = os.getenv('DATA_PATH')
+AWS_S3_BUCKET = os.getenv('AWS_S3_BUCKET')
+AWS_ACCESS_KEY_ID = os.getenv('AWS_ACCESS_KEY_ID')
+AWS_SECRET_ACCESS_KEY = os.getenv('AWS_SECRET_ACCESS_KEY')
+AWS_SESSION_TOKEN = os.getenv('AWS_SESSION_TOKEN')
+
 orders_file = dataPath + "/orders.json"
 
 def load_orders():
@@ -68,7 +74,33 @@ def create_order():
     with open(orders_file, 'w') as json_file:
         json.dump(orders, json_file,indent=4,separators=(',',': '))
 
+    s3_save(orders)
+
     return jsonify({'message': 'Order created successfully'}), 201
+
+
+@app.route('/', methods=['GET'])
+def get_orders():
+    orders = load_orders()
+    return jsonify({'orders': orders}), 201
+
+def s3_save(orders):
+    s3_client = boto3.client(
+    "s3",
+    aws_access_key_id=AWS_ACCESS_KEY_ID,
+    aws_secret_access_key=AWS_SECRET_ACCESS_KEY,
+    aws_session_token=AWS_SESSION_TOKEN
+    )
+
+    response = s3_client.put_object(
+        Bucket=AWS_S3_BUCKET, Key="orders.json", Body=json.dumps(orders)
+    )
+
+    status = response.get("ResponseMetadata", {}).get("HTTPStatusCode")
+    if status == 200:
+        print(f"Successful S3 put_object response. Status - {status}")
+    else:
+        print(f"Unsuccessful S3 put_object response. Status - {status}")
 
 @app.route('/health', methods=['GET'])
 def check_health():
