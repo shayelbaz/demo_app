@@ -36,6 +36,8 @@ spec:
         env:
             - name: DATA_PATH
               value: {{ .Values.volumeMountPath}}
+            - name: AWS_S3_BUCKET
+              value: {{ .Values.s3BucketName}}
         livenessProbe: 
      {{- toYaml .Values.livenessProbe | nindent 10 }}
         readinessProbe: 
