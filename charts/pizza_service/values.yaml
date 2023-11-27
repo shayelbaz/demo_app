@@ -72,7 +72,7 @@ persistence:
     hostPath:
       path: "/home/data"
 
-
+s3BucketName: pizza-service-s3
 
  # nfs:
   #   storageClassName: efs-sc
