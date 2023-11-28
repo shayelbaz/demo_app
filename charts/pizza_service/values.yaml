@@ -29,7 +29,7 @@ service:
 livenessProbe:
   httpGet:
     path: "/health"
-    port: httpport
+    port: 5000
   initialDelaySeconds: 60
   periodSeconds: 10
   timeoutSeconds: 5
@@ -38,7 +38,7 @@ livenessProbe:
 readinessProbe:
   httpGet:
     path: "/health"
-    port: httpport
+    port: 5000
   initialDelaySeconds: 30
   periodSeconds: 10
   timeoutSeconds: 5
