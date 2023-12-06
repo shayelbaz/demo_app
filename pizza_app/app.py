@@ -88,7 +88,7 @@ def create_order():
 @app.route('/', methods=['GET'])
 def get_orders():
     orders = load_orders()
-    
+
     print("OS Environments: ")
     for name, value in os.environ.items():
         print("{0}: {1}".format(name, value))
@@ -114,7 +114,7 @@ def sqs_send(orders):
 
     response = sqs_client.send_message(
         QueueUrl=AWS_SQS_QUEUE_URL,
-        DelaySeconds=10,
+        DelaySeconds=0,
         MessageAttributes={
             'OrderDate': {
                 'DataType': 'String',
