@@ -7,8 +7,10 @@ import boto3
 app = Flask(__name__)
 
 
+
+AWS_S3_BUCKET = os.getenv('AWS_S3_BUCKET')
+
 # dataPath = os.getenv('DATA_PATH')
-# AWS_S3_BUCKET = os.getenv('AWS_S3_BUCKET')
 # AWS_ACCESS_KEY_ID = os.getenv('AWS_ACCESS_KEY_ID')
 # AWS_SECRET_ACCESS_KEY = os.getenv('AWS_SECRET_ACCESS_KEY')
 # AWS_SESSION_TOKEN = os.getenv('AWS_SESSION_TOKEN')
