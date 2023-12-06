@@ -6,8 +6,6 @@ import boto3
 
 app = Flask(__name__)
 
-
-
 AWS_S3_BUCKET = os.getenv('AWS_S3_BUCKET')
 
 # dataPath = os.getenv('DATA_PATH')
