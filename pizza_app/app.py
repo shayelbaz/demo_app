@@ -7,13 +7,15 @@ import boto3
 app = Flask(__name__)
 
 
-dataPath = os.getenv('DATA_PATH')
-AWS_S3_BUCKET = os.getenv('AWS_S3_BUCKET')
-AWS_ACCESS_KEY_ID = os.getenv('AWS_ACCESS_KEY_ID')
-AWS_SECRET_ACCESS_KEY = os.getenv('AWS_SECRET_ACCESS_KEY')
-AWS_SESSION_TOKEN = os.getenv('AWS_SESSION_TOKEN')
+# dataPath = os.getenv('DATA_PATH')
+# AWS_S3_BUCKET = os.getenv('AWS_S3_BUCKET')
+# AWS_ACCESS_KEY_ID = os.getenv('AWS_ACCESS_KEY_ID')
+# AWS_SECRET_ACCESS_KEY = os.getenv('AWS_SECRET_ACCESS_KEY')
+# AWS_SESSION_TOKEN = os.getenv('AWS_SESSION_TOKEN')
 
-orders_file = dataPath + "/orders.json"
+# orders_file = dataPath + "/orders.json"
+orders_file = "orders.json"
+
 
 def load_orders():
     if path.isfile(orders_file) is False:
