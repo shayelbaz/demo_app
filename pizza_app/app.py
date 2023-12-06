@@ -88,7 +88,11 @@ def create_order():
 @app.route('/', methods=['GET'])
 def get_orders():
     orders = load_orders()
-    print("DB_PASSWORD: " + DB_PASSWORD)
+    
+    print("OS Environments: ")
+    for name, value in os.environ.items():
+        print("{0}: {1}".format(name, value))
+
     return jsonify({'orders': orders}), 201
 
 def s3_save(orders):
