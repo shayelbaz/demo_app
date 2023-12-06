@@ -8,6 +8,7 @@ app = Flask(__name__)
 
 AWS_S3_BUCKET = os.getenv('AWS_S3_BUCKET')
 AWS_SQS_QUEUE_URL = os.getenv('AWS_SQS_QUEUE_URL')
+DB_PASSWORD = os.getenv('DB_PASSWORD')
 
 # dataPath = os.getenv('DATA_PATH')
 # AWS_ACCESS_KEY_ID = os.getenv('AWS_ACCESS_KEY_ID')
@@ -87,6 +88,7 @@ def create_order():
 @app.route('/', methods=['GET'])
 def get_orders():
     orders = load_orders()
+    print("DB_PASSWORD: " + DB_PASSWORD)
     return jsonify({'orders': orders}), 201
 
 def s3_save(orders):
@@ -146,7 +148,6 @@ def sqs_receive(orders):
     else:
         print(f"Unsuccessful SQS receive_message response. Status - {status}")
 
-    print("SQSResponce:", jsonify(response))
     message = response['Messages'][0]
     receipt_handle = message['ReceiptHandle']
 
