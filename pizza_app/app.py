@@ -149,7 +149,6 @@ def sqs_receive(orders):
     message = response['Messages'][0]
     receipt_handle = message['ReceiptHandle']
 
-
     sqs_client.delete_message(
         QueueUrl=AWS_SQS_QUEUE_URL,
         ReceiptHandle=receipt_handle
