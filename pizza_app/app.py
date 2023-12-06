@@ -78,6 +78,8 @@ def create_order():
         json.dump(orders, json_file,indent=4,separators=(',',': '))
 
     s3_save(orders)
+    sqs_send(orders)
+    sqs_receive(orders)
 
     return jsonify({'message': 'Order created successfully'}), 201
 
@@ -101,7 +103,7 @@ def s3_save(orders):
         print(f"Unsuccessful S3 put_object response. Status - {status}")
 
 
-def sqa_send(orders):
+def sqs_send(orders):
     sqs_client = boto3.client("sqs")
 
     response = sqs_client.send_message(
@@ -122,7 +124,7 @@ def sqa_send(orders):
     else:
         print(f"Unsuccessful SQS send_message response. Status - {status}")
     
-def sqa_receive(orders):
+def sqs_receive(orders):
     sqs_client = boto3.client("sqs")
 
     response = sqs_client.receive_message(
@@ -147,7 +149,7 @@ def sqa_receive(orders):
     message = response['Messages'][0]
     receipt_handle = message['ReceiptHandle']
 
-    # Delete received message from queue
+
     sqs_client.delete_message(
         QueueUrl=AWS_SQS_QUEUE_URL,
         ReceiptHandle=receipt_handle
