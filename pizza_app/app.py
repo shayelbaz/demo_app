@@ -146,7 +146,7 @@ def sqs_receive(orders):
     else:
         print(f"Unsuccessful SQS receive_message response. Status - {status}")
 
-    print ("SQSResponce:", jsonify(response))
+    print("SQSResponce:", jsonify(response))
     message = response['Messages'][0]
     receipt_handle = message['ReceiptHandle']
 
