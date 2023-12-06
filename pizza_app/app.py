@@ -7,6 +7,7 @@ import boto3
 app = Flask(__name__)
 
 AWS_S3_BUCKET = os.getenv('AWS_S3_BUCKET')
+AWS_SQS_QUEUE_URL = os.getenv('AWS_SQS_QUEUE_URL')
 
 # dataPath = os.getenv('DATA_PATH')
 # AWS_ACCESS_KEY_ID = os.getenv('AWS_ACCESS_KEY_ID')
@@ -87,9 +88,7 @@ def get_orders():
     return jsonify({'orders': orders}), 201
 
 def s3_save(orders):
-    s3_client = boto3.client(
-        "s3"
-    )
+    s3_client = boto3.client("s3")
 
     response = s3_client.put_object(
         Bucket=AWS_S3_BUCKET, Key="orders.json", Body=json.dumps(orders)
@@ -100,6 +99,61 @@ def s3_save(orders):
         print(f"Successful S3 put_object response. Status - {status}")
     else:
         print(f"Unsuccessful S3 put_object response. Status - {status}")
+
+
+def sqa_send(orders):
+    sqs_client = boto3.client("sqs")
+
+    response = sqs_client.send_message(
+        QueueUrl=AWS_SQS_QUEUE_URL,
+        DelaySeconds=10,
+        MessageAttributes={
+            'OrderDate': {
+                'DataType': 'String',
+                'StringValue': '2023-12-06'
+            }
+        },
+        MessageBody=json.dumps(orders)
+    )
+
+    status = response.get("ResponseMetadata", {}).get("HTTPStatusCode")
+    if status == 200:
+        print(f"Successful SQS send_message response. Status - {status}")
+    else:
+        print(f"Unsuccessful SQS send_message response. Status - {status}")
+    
+def sqa_receive(orders):
+    sqs_client = boto3.client("sqs")
+
+    response = sqs_client.receive_message(
+        QueueUrl=AWS_SQS_QUEUE_URL,
+        AttributeNames=[
+            'SentTimestamp'
+        ],
+        MaxNumberOfMessages=1,
+        MessageAttributeNames=[
+            'All'
+        ],
+        VisibilityTimeout=0,
+        WaitTimeSeconds=0
+    )
+
+    status = response.get("ResponseMetadata", {}).get("HTTPStatusCode")
+    if status == 200:
+        print(f"Successful SQS receive_message response. Status - {status}")
+    else:
+        print(f"Unsuccessful SQS receive_message response. Status - {status}")
+
+    message = response['Messages'][0]
+    receipt_handle = message['ReceiptHandle']
+
+    # Delete received message from queue
+    sqs_client.delete_message(
+        QueueUrl=AWS_SQS_QUEUE_URL,
+        ReceiptHandle=receipt_handle
+    )
+
+    print('Received and deleted message: %s' % message)
 
 @app.route('/health', methods=['GET'])
 def check_health():
