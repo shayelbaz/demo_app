@@ -16,4 +16,4 @@ six==1.16.0
 urllib3==1.26.18
 Werkzeug==2.3.6
 zipp==3.17.0
-mysql-connector-python==8.4.0
+mysql-connector-python==8.1.0
