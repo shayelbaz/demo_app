@@ -3,12 +3,16 @@ import json
 from os import path
 import os
 import boto3
+import mysql.connector
 
 app = Flask(__name__)
 
 AWS_S3_BUCKET = os.getenv('AWS_S3_BUCKET')
 AWS_SQS_QUEUE_URL = os.getenv('AWS_SQS_QUEUE_URL')
-DB_PASSWORD = os.getenv('DB_PASSWORD')
+DB_PASSWORD = os.getenv('MM_CONFIG_db_password')
+DB_USERNAME = os.getenv('MM_CONFIG_db_username')
+MYSQL_DB_HOST = os.getenv('MYSQL_DB_HOST')
+MYSQL_DATABASE = os.getenv('MYSQL_DATABASE')
 
 # dataPath = os.getenv('DATA_PATH')
 # AWS_ACCESS_KEY_ID = os.getenv('AWS_ACCESS_KEY_ID')
@@ -81,6 +85,8 @@ def create_order():
     s3_save(orders)
     sqs_send(orders)
     sqs_receive(orders)
+    mysql_write(orders)
+    mysql_read()
 
     return jsonify({'message': 'Order created successfully'}), 201
 
@@ -161,6 +167,38 @@ def sqs_receive(orders):
     )
 
     print('Received and deleted message: %s' % message)
+
+def mysql_read():
+    mydb = mysql.connector.connect(
+        host=MYSQL_DB_HOST,
+        user=DB_USERNAME,
+        password=DB_PASSWORD,
+        database=MYSQL_DATABASE
+    )
+
+    mycursor = mydb.cursor()
+
+    mycursor.execute("SELECT * FROM orders")
+    
+    result = mycursor.fetchall()
+    print('Read MYSQL Orders:')
+    for line in result:
+        print(line)
+
+def mysql_write(orders):
+    mydb = mysql.connector.connect(
+        host=MYSQL_DB_HOST,
+        user=DB_USERNAME,
+        password=DB_PASSWORD,
+        database=MYSQL_DATABASE
+    )
+
+    mycursor = mydb.cursor()
+
+    mycursor.execute("CREATE TABLE IF NOT EXISTS orders (id INT AUTO_INCREMENT PRIMARY KEY, order_data JSON)")
+    mycursor.execute("INSERT INTO orders (order_data) VALUES (%s)", json.dumps(orders))
+
+    mydb.commit()
 
 @app.route('/health', methods=['GET'])
 def check_health():
