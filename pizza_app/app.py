@@ -106,7 +106,7 @@ def s3_save(orders):
     s3_client = boto3.client("s3")
 
     response = s3_client.put_object(
-    Bucket=AWS_S3_BUCKET, Key="orders.json", Body=json.dumps(orders)
+        Bucket=AWS_S3_BUCKET, Key="orders.json", Body=json.dumps(orders)
     )
 
     status = response.get("ResponseMetadata", {}).get("HTTPStatusCode")
