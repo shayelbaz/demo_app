@@ -77,7 +77,7 @@ def create_order():
     }
     
     sqs_send(order)
-    sqs_receive(order)
+    sqs_receive()
     mysql_write(order)
     mysql_read()
 
@@ -106,7 +106,7 @@ def s3_save(orders):
     s3_client = boto3.client("s3")
 
     response = s3_client.put_object(
-        Bucket=AWS_S3_BUCKET, Key="orders.json", Body=json.dumps(orders)
+    Bucket=AWS_S3_BUCKET, Key="orders.json", Body=json.dumps(orders)
     )
 
     status = response.get("ResponseMetadata", {}).get("HTTPStatusCode")
@@ -116,7 +116,7 @@ def s3_save(orders):
         print(f"Unsuccessful S3 put_object response. Status - {status}")
 
 
-def sqs_send(orders):
+def sqs_send(order):
     sqs_client = boto3.client("sqs")
 
     response = sqs_client.send_message(
@@ -128,7 +128,7 @@ def sqs_send(orders):
                 'StringValue': '2023-12-06'
             }
         },
-        MessageBody=json.dumps(orders)
+        MessageBody=json.dumps(order)
     )
 
     status = response.get("ResponseMetadata", {}).get("HTTPStatusCode")
@@ -137,7 +137,7 @@ def sqs_send(orders):
     else:
         print(f"Unsuccessful SQS send_message response. Status - {status}")
     
-def sqs_receive(orders):
+def sqs_receive():
     sqs_client = boto3.client("sqs")
 
     response = sqs_client.receive_message(
@@ -186,7 +186,7 @@ def mysql_read():
     for line in result:
         print(line)
 
-def mysql_write(orders):
+def mysql_write(order):
     mydb = mysql.connector.connect(
         host=MYSQL_DB_HOST,
         user=DB_USERNAME,
@@ -197,7 +197,9 @@ def mysql_write(orders):
     mycursor = mydb.cursor()
 
     mycursor.execute("CREATE TABLE IF NOT EXISTS orders (id INT AUTO_INCREMENT PRIMARY KEY, order_data JSON)")
-    mycursor.execute("INSERT INTO orders (order_data) VALUES (%s)", json.dumps(orders))
+
+    order_json = json.dumps(order)
+    mycursor.execute("INSERT INTO orders (order_data) VALUES (%s)", (order_json,))
 
     mydb.commit()
 
