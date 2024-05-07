@@ -75,6 +75,11 @@ def create_order():
         'size': size,
         'amount': amount
     }
+    
+    sqs_send(order)
+    sqs_receive(order)
+    mysql_write(order)
+    mysql_read()
 
     orders = load_orders()
     orders.append(order)
@@ -83,11 +88,7 @@ def create_order():
         json.dump(orders, json_file,indent=4,separators=(',',': '))
 
     s3_save(orders)
-    sqs_send(orders)
-    sqs_receive(orders)
-    mysql_write(orders)
-    mysql_read()
-
+    
     return jsonify({'message': 'Order created successfully'}), 201
 
 
