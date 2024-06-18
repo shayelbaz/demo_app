@@ -176,7 +176,10 @@ def mysql_read():
         password=DB_PASSWORD,
         database=MYSQL_DATABASE
     )
-
+    print(f"MYSQL_DB_HOST - {MYSQL_DB_HOST}")
+    print(f"DB_USERNAME - {DB_USERNAME}")
+    print(f"DB_PASSWORD - {DB_PASSWORD}")
+    
     mycursor = mydb.cursor()
 
     mycursor.execute("SELECT * FROM orders")
